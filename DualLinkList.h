@@ -1,20 +1,22 @@
-#ifndef LINKLIST_H
-#define LINKLIST_H
+#ifndef DUALLINKLIST_H
+#define DUALLINKLIST_H
 #include "Object.h"
 #include "List.h"
 #include "Exception.h"
 namespace  SQHLib {
 template<typename T>
-class LinkList : public List<T>{
+class DualLinkList : public List<T>{
   protected:
       struct Node : public Object{
             T value;
             Node * next;
+            Node* pre;
       };
      int m_length;
      mutable struct : public Object{
             char reserved[sizeof(T)];
              Node * next;
+             Node* pre;
      }m_header;
     Node * position(int i){
            Node * current = reinterpret_cast<Node*>(&m_header);
@@ -26,13 +28,14 @@ class LinkList : public List<T>{
     Node*  m_current;
     int m_step;
     public:
-        LinkList(){
+        DualLinkList(){
             m_header.next = NULL;
+            m_header.pre  = NULL;
             m_length = 0;
             m_current = NULL;
             m_step = 1;
         }
-        virtual bool move(int i,int step = 1){
+        bool move(int i,int step = 1){
                 if( i >= 0 && i < length() ){
                         m_current = position(i)->next;
                         this->m_step = step;
@@ -41,14 +44,14 @@ class LinkList : public List<T>{
                 return false;
         }
 
-      virtual  T& current(){
+        T& current(){
                 if(m_current){
                         return m_current->value;
                 }else{
                     THROW_EXCEPTION("TAG",IndexOutOfBoundsException);
                 }
         }
-     virtual   bool next(){
+        bool next(){
             int i = 0;
             for(;i < m_step;i++){
                     if(m_current == NULL){
@@ -59,7 +62,18 @@ class LinkList : public List<T>{
             return (i == m_step);
         }
 
-       virtual bool end(){
+        bool pre(){
+            int i = 0;
+            for(;i < m_step;i++){
+                    if(m_current == NULL){
+                            break;
+                    }
+                    m_current = m_current->pre;
+            }
+            return (i == m_step);
+        }
+
+        bool end(){
             return m_current == NULL;
         }
 
@@ -80,9 +94,16 @@ class LinkList : public List<T>{
                 if(node){
                         node->value = e;
                         node->next =NULL;
+                        node->pre = NULL;
                         Node * current = position(i);
                         node->next = current->next;
-                        current->next = node;
+                        if(i != 0){
+                             node->pre = current;
+                        }
+                        if(current->next){
+                            current->next->pre = node;
+                         }
+                         current->next = node;
                         m_length++;
                 }else{
                     THROW_EXCEPTION("No mem",NoEnoughMemoryException);
@@ -90,7 +111,6 @@ class LinkList : public List<T>{
             }else{
                 THROW_EXCEPTION("invalid para",InvalidParameterException);
             }
-
             return ret;
        }
 
@@ -100,11 +120,17 @@ class LinkList : public List<T>{
                  Node * current = position(i);
                  Node *toDel  = current->next;
                  current->next = toDel->next;
+                 if(i == 0 && toDel->next){
+                      toDel->next->pre = NULL;
+                 }
+                 if(i != 0 && toDel->next){
+                      toDel->next->pre = current;
+                 }
                  if(this->m_current && this->m_current == toDel){
                      this->m_current = toDel->next;
                  }
-                 m_length--;
                  destory(toDel);
+                 m_length--;
               }else{
                        THROW_EXCEPTION("invalid para",InvalidParameterException);
               }
@@ -141,7 +167,7 @@ class LinkList : public List<T>{
                   lHead = lHead->next;
               }
               if(i < this->m_length){
-                   return i;
+                  return i;
               }
          }
          return -1;
@@ -162,10 +188,9 @@ class LinkList : public List<T>{
             m_length = 0;
         }
      }
-    ~LinkList(){
+    ~DualLinkList(){
         clear();
     }
 };
 }
-
-#endif // LINKLIST_H
+#endif // DUALLINKLIST_H

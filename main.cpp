@@ -8,23 +8,25 @@
 #include "SharePointer.h"
 #include "test.h"
 #include "CircleList.h"
+#include "DualLinkList.h"
 
 using namespace std;
 using namespace SQHLib;
 
-void josehus(){
-    CircleList<int> cl;
-    for(int i = 1 ;i < 42;i++){
-        cl.insert(i);
-     }
-       cl.move(0,2);
-      while(!cl.end()){
-         cl.next();
-         cout<<"value:"<<cl.current()<<endl;
-         cl.remove(cl.find(cl.current()));
-     }
+void test(){
+        DualLinkList<int>  dl;
+        for(int i = 0;i < 10 ; i++){
+            dl.insert(i);
+        }
+
+        dl.remove(0);
+        dl.move(dl.length() - 1);
+        while(!dl.end()){
+            cout << dl.current() << endl;
+            dl.pre();
+        }
 }
 int main(){
-    josehus();
+    test();
 }
 
