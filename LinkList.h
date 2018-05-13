@@ -11,20 +11,20 @@ class LinkList : public List<T>{
             T value;
             Node * next;
       };
-       int m_length;
-       mutable struct : public Object{
+     int m_length;
+     mutable struct : public Object{
             char reserved[sizeof(T)];
              Node * next;
-       }m_header;
+     }m_header;
+    Node * position(int i){
+           Node * current = reinterpret_cast<Node*>(&m_header);
+           for(int p = 0;p <  i ;p++){
+               current = current->next;
+           }
+           return current;
+       }
     Node*  m_current;
     int m_step;
-    Node * position(int i){
-        Node * current = reinterpret_cast<Node*>(&m_header);
-        for(int p = 0;p <  i ;p++){
-            current = current->next;
-        }
-        return current;
-    }
     public:
         LinkList(){
             m_header.next = NULL;
@@ -35,14 +35,17 @@ class LinkList : public List<T>{
         bool move(int i,int step = 1){
                 if( i >= 0 && i < length() ){
                         m_current = position(i)->next;
+                        this->m_step = step;
                         return true;
                 }
                 return false;
         }
 
-        T* current(){
+        T& current(){
                 if(m_current){
                         return m_current->value;
+                }else{
+                    THROW_EXCEPTION("TAG",IndexOutOfBoundsException);
                 }
         }
         bool next(){
@@ -122,6 +125,23 @@ class LinkList : public List<T>{
                    THROW_EXCEPTION("invalid para",InvalidParameterException);
          }
          return ret;
+     }
+
+     int find(const T& e){
+         if(this->m_length > 0){
+              Node* lHead  = m_header.next;
+              int i = 0;
+              for(;i < this->m_length;i++){
+                  if(lHead->value == e){
+                      break;
+                  }
+                  lHead = lHead->next;
+              }
+              if(i < this->m_length){
+                  return i;
+              }
+         }
+         return -1;
      }
      virtual int length() const{
          return m_length;
