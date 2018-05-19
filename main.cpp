@@ -10,25 +10,27 @@
 #include "CircleList.h"
 #include "DualLinkList.h"
 #include "DualCirecleList.h"
+#include  "LinkStack.h"
+#include "LinkQueue.h"
 
 using namespace std;
 using namespace SQHLib;
 
-void test(){
-        DualCirecleList<int>  dl;
-        for(int i = 0;i < 10 ; i++){
-            dl.insert(i);
-        }
-        dl.insert(10,10);
-        dl.move(0);
-        while(!dl.end()){
-            cout << dl.current() << endl;
-         //   dl.pre();
-            dl.remove(dl.find(dl.current()));
-        }
-         //   cout << dl.current() << endl;
-       //     dl.pre();
+void test(){ 
+    LinkQueue<int> lq;
 
+    for(int i = 0;i<10;i++){
+        lq.add(i);
+    }
+    int a = 0;
+    cout<<" len :"<<lq.length()<<endl;
+    for(int i = 0;i<10;i++){
+      //  cout<<a<<" len :"<<lq.length()<<endl;
+        lq.front(a);
+        lq.remove();
+        cout<<a<<" len :"<<lq.length()<<endl;
+    }
+  //
 }
 int main(){
     test();
