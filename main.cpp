@@ -9,22 +9,26 @@
 #include "test.h"
 #include "CircleList.h"
 #include "DualLinkList.h"
+#include "DualCirecleList.h"
 
 using namespace std;
 using namespace SQHLib;
 
 void test(){
-        DualLinkList<int>  dl;
+        DualCirecleList<int>  dl;
         for(int i = 0;i < 10 ; i++){
             dl.insert(i);
         }
-
-        dl.remove(0);
-        dl.move(dl.length() - 1);
+        dl.insert(10,10);
+        dl.move(0);
         while(!dl.end()){
             cout << dl.current() << endl;
-            dl.pre();
+         //   dl.pre();
+            dl.remove(dl.find(dl.current()));
         }
+         //   cout << dl.current() << endl;
+       //     dl.pre();
+
 }
 int main(){
     test();
