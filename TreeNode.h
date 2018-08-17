@@ -1,14 +1,17 @@
 #ifndef TREENODE_H
 #define TREENODE_H
+#include "Object.h"
 namespace SQHLib{
 template <typename T>
-class  TreeNode{
+class  TreeNode : public Object{
 public:
+    bool inHeap;
     T  value;
     TreeNode<T>* parrent;
-    TreeNode(){
+    TreeNode():inHeap(false){
         parrent = NULL;
     }
+    virtual ~TreeNode(){};
 };
 }
 

@@ -5,9 +5,27 @@
 namespace SQHLib{
 template <typename T>
 class GTreeNode : public TreeNode<T>{
+protected:
+    void * operator new ( size_t size) throw(){
+            return Object::operator new(size);
+    }
 public:
+
 LinkList<GTreeNode<T> *>   chid;
+static GTreeNode<T>* NewNode(){
+    GTreeNode<T>* ret = new GTreeNode<T>();
+    if(ret){
+        ret->inHeap = true;
+    }
+    return ret;
+}
+GTreeNode(){
+
+}
+
 };
+
+
 
 }
 
