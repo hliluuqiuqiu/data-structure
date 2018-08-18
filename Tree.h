@@ -32,6 +32,13 @@ public:
       }
       cout<<endl;
  }
+
+
+ virtual void begin() = 0;
+ virtual bool end() = 0;
+ virtual void next() = 0;
+ virtual TreeNode<T>* current() = 0;
+
  virtual ~Tree(){};
 };
 

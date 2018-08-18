@@ -14,6 +14,7 @@
 #include "Tree.h"
 #include "GTree.h"
 #include  "BTree.h"
+#include "SmartPointer.h"
 using namespace std;
 using namespace SQHLib;
 
@@ -104,10 +105,20 @@ void testBtree(){
      //b->remove(2);
      b->print();
      cout<<"..............."<<endl;
-     cout<<b->count()<<endl;
-      cout<<b->degree()<<endl;
-       cout<<b->height()<<endl;
+     for(b->begin();!b->end();b->next()){
+        //    cout<<b->current()->value<<endl;
+     }
+    SmartPointer< BTree<int> > clo = b->clone();
+   // clo->print();
+
+    SmartPointer< BTree<int> > sum = *b + *clo;
+  //  sum->print();
+    cout<< (*b == *clo) << (*b == *sum) << endl;
+
+
 }
+
+
 int main(){
     testBtree();
     //testGTree();

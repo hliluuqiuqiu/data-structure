@@ -1,12 +1,15 @@
 #ifndef BTREE_H
 #define BTREE_H
+#include "SmartPointer.h"
 #include "Tree.h"
 #include "BTreeNode.h"
 #include "Exception.h"
+#include "LinkQueue.h"
 namespace SQHLib{
 template <typename  T>
 class BTree : public Tree<T>{
 protected:
+    LinkQueue< BTreeNode<T>*> queue;
     BTreeNode<T>*  find(BTreeNode<T>* obj, BTreeNode<T>* node){
             BTreeNode<T>* ret = NULL;
             if(obj == NULL || node == NULL){
@@ -193,6 +196,86 @@ protected:
         return ret;
 
     }
+
+   BTreeNode<T>*  clone(BTreeNode<T>* node){
+        BTreeNode<T>*  ret = NULL;
+       if(node == NULL){
+            return NULL;
+       }else{
+           ret = BTreeNode<T>::NewNode();
+           if(ret == NULL){
+                THROW_EXCEPTION("NO men",NoEnoughMemoryException);
+           }
+
+           ret->value = node->value;
+           BTreeNode<T>*  leftChild = clone(node->left);
+           ret->left = leftChild;
+           if(leftChild){
+                leftChild->parrent = ret;
+           }
+
+           BTreeNode<T>*  rightChild = clone(node->right);
+           ret->right = rightChild;
+           if(rightChild){
+                rightChild->parrent = ret;
+           }
+       }
+
+       return ret;
+   }
+
+   BTreeNode<T>* add(BTreeNode<T>* l,BTreeNode<T>* r){
+       BTreeNode<T>*  ret = NULL;
+       if(l == NULL && r == NULL){
+            return NULL;
+       }else if(l != NULL && r == NULL){
+               return clone(l);
+       }else if(l == NULL && r != NULL){
+                return clone(r);
+       }else{
+           ret = BTreeNode<T>::NewNode();
+           if(ret == NULL){
+                THROW_EXCEPTION("NO MEM",NoEnoughMemoryException);
+           }
+
+           ret->value = l->value + r->value;
+           ret->left = add(l->left,r->left);
+           if(ret->left){
+                ret->left->parrent = ret;
+           }
+
+           ret->right = add(l->right,r->right);
+           if(ret->right){
+                ret->right->parrent = ret;
+           }
+       }
+       return ret;
+   }
+
+   bool equal(BTreeNode<T>* l,BTreeNode<T>* r){
+       bool ret = false;
+       if(l == r ){
+            return true;
+       }
+
+       if(l && r){
+            ret = l->value == r->value;
+            if(!ret){
+               return ret;
+            }
+
+            ret = equal(l->left,r->left);
+            if(!ret){
+               return ret;
+            }
+
+            ret = equal(l->right,r->right);
+            if(!ret){
+               return ret;
+            }
+       }
+       return ret;
+   }
 public:
      bool insert(TreeNode<T>*  node,TreeNode<T>*  parrent ){
              if(node == NULL){
@@ -274,6 +357,64 @@ public:
          if(this->m_root){
              print(root());
          }
+     }
+
+     void begin(){
+         if(this->m_root){
+                queue.clear();
+                queue.add(root());
+         }
+     }
+     bool end() {
+         return queue.length() == 0;
+     }
+     void next() {
+         if(queue.length() > 0){
+                 BTreeNode<T>* ret  = NULL;
+                 queue.front(ret);
+                 if(ret->left){
+                     queue.add(ret->left);
+                 }
+
+                 if(ret->right){
+                     queue.add(ret->right);
+                 }
+
+                 queue.remove();
+         }
+     }
+     BTreeNode<T>* current() {
+         BTreeNode<T>* ret = NULL;
+          queue.front(ret);
+          return ret;
+     }
+
+     virtual  SmartPointer< BTree<T> > clone(){
+         BTree<T>* ret =  new BTree<T>();
+         if(ret == NULL){
+             THROW_EXCEPTION("NO MEM",NoEnoughMemoryException);
+         }
+
+         BTreeNode<T>*  r = clone(root());
+         ret->m_root = r;
+
+         return ret;
+      }
+
+     SmartPointer< BTree<T> > operator +( BTree<T>& obj){
+         cout<<"operate + "<<endl;
+         BTree<T>*  ret =  new  BTree<T>();
+         BTreeNode<T>* node = add(root(),obj.root());
+         ret->m_root = node;
+         return ret;
+     }
+
+     bool operator ==(BTree<T>& obj){
+            return equal(root(),obj.root());
+     }
+
+     bool operator !=(BTree<T>& obj){
+         return !(operator ==(obj));
      }
      ~BTree(){};
 };
