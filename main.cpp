@@ -1,4 +1,5 @@
 #include <iostream>
+#include <typeinfo>
 #include "StaticList.h"
 #include "Exception.h"
 #include "StaticArray.h"
@@ -15,6 +16,8 @@
 #include "GTree.h"
 #include  "BTree.h"
 #include "SmartPointer.h"
+#include "Graph.h"
+#include "MatrixGraph.h"
 using namespace std;
 using namespace SQHLib;
 
@@ -105,22 +108,48 @@ void testBtree(){
      //b->remove(2);
      b->print();
      cout<<"..............."<<endl;
-     for(b->begin();!b->end();b->next()){
+   //  for(b->begin();!b->end();b->next()){
         //    cout<<b->current()->value<<endl;
-     }
-    SmartPointer< BTree<int> > clo = b->clone();
+ //    }
+   // SmartPointer< BTree<int> > clo = b->clone();
    // clo->print();
 
-    SmartPointer< BTree<int> > sum = *b + *clo;
+   // SmartPointer< BTree<int> > sum = *b + *clo;
   //  sum->print();
-    cout<< (*b == *clo) << (*b == *sum) << endl;
-
-
+//    cout<< (*b == *clo) << (*b == *sum) << endl;
+//     SmartPointer< LinkQueue< BTreeNode<T>*  > >
+    SmartPointer<  LinkQueue< BTreeNode<int>* > > q = b->travesal(POST_ORDER);
+    BTreeNode<int>*  n = NULL;
+    while(q->length() > 0){
+        q->front(n);
+        cout<<n->value<<" ";
+        q->remove();
+    }
 }
 
 
 int main(){
-    testBtree();
+    MatricGraph<4,int,int>* g = new MatricGraph<4,int,int>();
+    g->setVertext(0,0);
+    g->setVertext(1,1);
+    g->setVertext(2,2);
+    g->setVertext(3,3);
+    g->setEdge(0,1,1);
+    g->setEdge(0,3,1);
+    g->setEdge(1,0,1);
+    g->setEdge(1,2,1);
+    g->setEdge(2,1,1);
+    g->setEdge(2,3,1);
+    g->setEdge(3,0,1);
+    g->setEdge(3,2,1);
+    g->print();
+   // testBtree();
     //testGTree();
+    cout<<"ecout: "<<g->eCout();
+     cout<<"vcout: "<<g->vCout();
+     cout<<"od: "<<g->OD(0);
+     cout<<"id:"<<g->ID(1);
+     cout<<"TD"<<g->TD(2);
+
 }
 

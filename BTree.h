@@ -6,6 +6,7 @@
 #include "Exception.h"
 #include "LinkQueue.h"
 namespace SQHLib{
+enum  BTreeTravesalType{PRE_ORDER,IN_ODER,POST_ORDER};
 template <typename  T>
 class BTree : public Tree<T>{
 protected:
@@ -276,6 +277,64 @@ protected:
        }
        return ret;
    }
+
+      LinkQueue< BTreeNode<T>*  >*   travesal(BTreeTravesalType type,BTreeNode<T>* node){
+        if(node == NULL){
+              return NULL;
+        }
+
+        LinkQueue< BTreeNode<T>*  >*  gQueue =new LinkQueue<BTreeNode<T>* > ();
+        if(gQueue == NULL){
+               THROW_EXCEPTION("NO MEM",NoEnoughMemoryException);
+        }
+
+        switch (type){
+            case PRE_ORDER: {
+                  preOrderTravesal(node,gQueue);
+                  break;
+            }
+            case IN_ODER:{
+                 inOrderTravesal(node,gQueue);
+                 break;
+           }
+            case POST_ORDER:{
+                 postOrderTravesal(node,gQueue);
+                 break;
+            }
+            default:
+                THROW_EXCEPTION("invalid para..",InvalidParameterException);
+                break;
+        }
+        return gQueue;
+    }
+
+    void preOrderTravesal(BTreeNode<T>* node,  LinkQueue< BTreeNode<T>*  >*& q){
+        if(node == NULL){
+               return ;
+        }
+
+        q->add(node);
+        preOrderTravesal(node->left,q);
+        preOrderTravesal(node->right,q);
+    }
+
+    void inOrderTravesal(BTreeNode<T>* node,  LinkQueue< BTreeNode<T>*  >*& q){
+        if(node == NULL){
+               return ;
+        }
+        inOrderTravesal(node->left,q);
+        q->add(node);
+        inOrderTravesal(node->right,q);
+    }
+
+    void postOrderTravesal(BTreeNode<T>* node,  LinkQueue< BTreeNode<T>*  >*& q){
+        if(node == NULL){
+               return ;
+        }
+        postOrderTravesal(node->left,q);
+        postOrderTravesal(node->right,q);
+        q->add(node);
+    }
 public:
      bool insert(TreeNode<T>*  node,TreeNode<T>*  parrent ){
              if(node == NULL){
@@ -349,6 +408,7 @@ public:
 
      int clear() {
          clear(root());
+         return 0;
      }
      bool isEmpty() {
           return 0;
@@ -416,7 +476,12 @@ public:
      bool operator !=(BTree<T>& obj){
          return !(operator ==(obj));
      }
-     ~BTree(){};
+
+     SmartPointer< LinkQueue< BTreeNode<T>*  > >  travesal(BTreeTravesalType type){
+         //LinkQueue< BTreeNode<T>*  >*
+         return travesal(type,root());
+     }
+     ~BTree(){}
 };
 
 }
