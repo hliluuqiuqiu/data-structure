@@ -127,8 +127,7 @@ void testBtree(){
     }
 }
 
-
-int main(){
+void testMatricGraph(){
     MatricGraph<4,int,int>* g = new MatricGraph<4,int,int>();
     g->setVertext(0,0);
     g->setVertext(1,1);
@@ -150,6 +149,27 @@ int main(){
      cout<<"od: "<<g->OD(0);
      cout<<"id:"<<g->ID(1);
      cout<<"TD"<<g->TD(2);
+}
+void testListReVerse(){
+ //   cout<<"start";
+   LinkList<int> list;
+   int v[9] = {1,2,3,4,5,4,3,2,1};
+    for(int i = 0 ; i < 9 ; i++){
+        list.insert(v[i]);
+    }
+  //  cout<<list.length()<<endl;
+   // list.reverse();
+  //  list.print();
+    //list.reverse();
+   // list.print();
+    cout<<list.isBtt()<<endl;
+    list.print();
+}
 
+
+
+int main(){
+    //cout<<"start main";
+    testListReVerse();
 }
 

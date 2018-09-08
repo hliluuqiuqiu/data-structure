@@ -1,5 +1,6 @@
 #ifndef LINKLIST_H
 #define LINKLIST_H
+#include <iostream>
 #include "Object.h"
 #include "List.h"
 #include "Exception.h"
@@ -162,8 +163,106 @@ class LinkList : public List<T>{
             m_length = 0;
         }
      }
+
+    void reverse(){
+        if(m_length > 1){
+              m_header.next = reverse(m_header.next);
+        }
+    }
+
+    void print(){
+        if(m_length > 0){
+            T value;
+            for(int i = 0 ; i < m_length; i++){
+                    this->get(i,value);
+                     std::cout<<value<<endl;
+            }
+        }
+    }
+
+    bool isBtt(){
+        bool ret = false;
+        if(m_length == 0){
+            return ret;
+        }
+
+        Node* first = m_header.next;
+        Node* slow = m_header.next;
+
+        while(first->next){
+            first = first->next;
+            if(first->next == NULL){
+                    break;
+            }
+            first = first->next;
+            slow = slow->next;
+        }
+
+
+
+        bool isODD = ( (m_length % 2) == 1);
+
+        Node* SendHead = NULL;
+        Node* firstHead = NULL;
+        Node* NodeFlag = NULL;
+        if(isODD){
+              SendHead = this->reverse(slow);
+              NodeFlag = SendHead;
+              firstHead =  m_header.next;
+
+              while(SendHead){
+                  if(firstHead->value != SendHead->value){
+                         break;
+                  }
+                  SendHead = SendHead->next;
+                  firstHead = firstHead->next;
+              }
+
+             if(SendHead == NULL){
+                    ret = true;
+             }else{
+                    ret = false;
+             }
+             this->reverse(NodeFlag);
+        }else{
+            SendHead = this->reverse(slow->next);
+            firstHead = m_header.next;
+             NodeFlag = SendHead;
+            cout << "..." <<SendHead->value<<endl;
+            while(SendHead){
+                if(firstHead->value != SendHead->value){
+                       break;
+                }
+                SendHead = SendHead->next;
+                firstHead = firstHead->next;
+                // cout << "..." <<SendHead->value<<endl;
+            }
+
+           if(SendHead == NULL){
+                  ret = true;
+           }else{
+                  ret = false;
+           }
+           this->reverse(NodeFlag);
+        }
+        return ret;
+    }
+
     ~LinkList(){
         clear();
+    }
+
+private:
+    Node*  reverse(Node*  head){
+            Node* pre = NULL;
+            Node* next = NULL;
+            while(head){
+                next = head->next;
+                head->next = pre;
+                pre = head;
+                head = next;
+            }
+            return pre;
     }
 };
 }

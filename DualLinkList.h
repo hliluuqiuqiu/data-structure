@@ -188,6 +188,31 @@ class DualLinkList : public List<T>{
             m_length = 0;
         }
      }
+    void reverse(){
+        if(m_length > 1){
+               Node* current = m_header.next;
+               Node* next1 = current->next;
+               current->next = NULL;
+               for(int i = 0 ; i < m_length -1; i++){
+                     Node* next2 = next1->next;
+                     next1->next = current;
+                     current->pre = next1;
+                     current = next1;
+                     next1 = next2;
+               }
+               m_header.next = current;
+        }
+    }
+
+    void print(){
+        if(m_length > 0){
+            T value;
+            for(int i = 0 ; i < m_length; i++){
+                    this->get(i,value);
+                     std::cout<<value<<endl;
+            }
+        }
+    }
     ~DualLinkList(){
         clear();
     }
