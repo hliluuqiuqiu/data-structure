@@ -5,6 +5,8 @@
 #include "BTreeNode.h"
 #include "Exception.h"
 #include "LinkQueue.h"
+#include "StaticLinkList.h"
+#include "LinkStack.h"
 namespace SQHLib{
 enum  BTreeTravesalType{PRE_ORDER,IN_ODER,POST_ORDER};
 template <typename  T>
@@ -28,6 +30,43 @@ protected:
           }
           return ret;
     }
+
+    bool isComplete(BTreeNode<T>* node){
+        if(node == NULL){
+                return true;
+        }
+        bool ret = true;
+
+        LinkQueue<BTreeNode<T>*> queue;
+        queue.add(node);
+        bool  left = false;
+        while(queue.length() != 0){
+           BTreeNode<T>* temp  = NULL;
+           queue.front(temp);
+           queue.remove();
+           if((left && (temp->left != NULL || temp->right != NULL))
+                   || (temp->left == NULL && temp->right != NULL)
+                   ){
+                    ret = false;
+                    break;
+           }
+
+           if(temp->left == NULL || temp->right == NULL){
+                  left = true;
+           }
+
+           if(temp->left){
+               queue.add(temp->left);
+           }
+
+           if(temp->right){
+                queue.add(temp->right);
+           }
+        }
+
+        return ret;
+    }
+
 
     BTreeNode<T>*  find(const T& obj, BTreeNode<T>* node){
             BTreeNode<T>* ret = NULL;
@@ -481,6 +520,100 @@ public:
          //LinkQueue< BTreeNode<T>*  >*
          return travesal(type,root());
      }
+
+    void  preTraversing(){
+            BTreeNode<T>* node = root();
+            LinkStack< BTreeNode<T>*>  stack ;
+            stack.push(node);
+
+            while(stack.size() != 0){
+                    stack.top(node);
+                    stack.pop();
+                     std::cout << node->value;
+                    if(node->right != NULL){
+                          stack.push(node->right);
+                    }
+
+                    if(node->left != NULL){
+                         stack.push(node->left);
+                    }else{
+                         std::cout<<std::endl;
+                    }
+            }
+     }
+
+    void orderTravering(){
+        BTreeNode<T>* node = root();
+        LinkStack< BTreeNode<T>*>  stack ;
+
+        while(node != NULL || stack.size() != 0){
+                while(node){
+                   stack.push(node);
+                   node = node->left;
+                }
+                if(stack.size() != 0){
+                    stack.top(node);
+                    stack.pop();
+                     std::cout<<"value " << node->value<<std::endl;
+                     node = node->right;
+                }
+        }
+    }
+
+    bool isComplete(){
+       return isComplete(root());
+    }
+
+    int countCBT(){
+        if(!isComplete()){
+            return -1;
+        }
+
+        return countCBT(root());
+    }
+
+    int  countCBT(BTreeNode<T>* node){
+        if(node == NULL){
+            return 0;
+        }
+        int Degree = 0;
+        int rightChildDegree = 0;
+        BTreeNode<T>* head = node;
+        while(node){
+            Degree++;
+            node = node->left;
+        }
+
+        node = head->right;
+        while(node){
+            rightChildDegree++;
+            node = node->left;
+        }
+
+        if(rightChildDegree == 0){
+            return 1 + countCBT(head->left);
+        }
+
+        if(Degree > rightChildDegree + 1){
+            return 1 + power(2 , rightChildDegree) - 1 +  countCBT(head->left);
+        }else if(Degree == rightChildDegree + 1){
+            std::cout<< "- " <<rightChildDegree<<std::endl;
+             return 1 + (power(2 , rightChildDegree) - 1) +  countCBT(head->right);
+        }
+
+
+
+    }
+
+    int power(int v , int p){
+        int ret = 1;
+        for(int i = 0 ; i < p ; i++){
+            ret = ret * v;
+        }
+        return ret;
+    }
+
+
      ~BTree(){}
 };
 

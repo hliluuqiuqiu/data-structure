@@ -228,7 +228,7 @@ class LinkList : public List<T>{
             SendHead = this->reverse(slow->next);
             firstHead = m_header.next;
              NodeFlag = SendHead;
-            cout << "..." <<SendHead->value<<endl;
+
             while(SendHead){
                 if(firstHead->value != SendHead->value){
                        break;

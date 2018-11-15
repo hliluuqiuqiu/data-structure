@@ -19,6 +19,7 @@ public:
         }
         return ret;
     }
+
     BTreeNode<T>*  left;
     BTreeNode<T>*  right;
     BTreeNode():left(NULL),right(NULL){}

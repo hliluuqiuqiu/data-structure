@@ -92,22 +92,24 @@ void testBtree(){
      b->insert(4,node_2);
      b->insert(5,node_2);
 
-     BTreeNode<int>*  node_4 = b->find(4);
-     b->insert(8,node_4);
-     b->insert(9,node_4);
-
-     BTreeNode<int>*  node_5 = b->find(5);
-     b->insert(10,node_5);
-
      BTreeNode<int>*  node_3 = b->find(3);
      b->insert(6,node_3);
      b->insert(7,node_3);
 
+     BTreeNode<int>*  node_4 = b->find(4);
+     b->insert(8,node_4);
+      b->insert(9,node_4);
+     BTreeNode<int>*  node_5 = b->find(5);
+     b->insert(10,node_5);
+     b->insert(11,node_5);
+
      BTreeNode<int>*  node_6 = b->find(6);
-     b->insert(11,node_6);
+     b->insert(12,node_6);
+     b->insert(13,node_6);
      //b->remove(2);
      b->print();
-     cout<<"..............."<<endl;
+   //  b->preTraversing();
+     cout<<"..............."<<b->countCBT()<<endl;
    //  for(b->begin();!b->end();b->next()){
         //    cout<<b->current()->value<<endl;
  //    }
@@ -166,10 +168,46 @@ void testListReVerse(){
     list.print();
 }
 
+void printShareValue(){
+LinkList<int> l;
+LinkList<int> l1;
+int  data[10] = {0,1,2,3,4,6,6,7,8,9};
+int  data1[10] = {0,1,2,3,4,5,6,7,8,9};
+for(int i = 0; i < 10 ; i++){
+    l.insert(i,data[i]);
+    l1.insert(i,data1[i]);
+}
+int curr1 = 0;
+int curr2 = 0;
+int v1 ,v2;
+for(int i = 0 ; (curr1 < l.length()) && (curr2 < l1.length()) ; i++){
+    l.get(curr1,v1);
+    l1.get(curr2,v2);
+    if(v1 > v2){
+          curr2++;
+          cout<<endl;
+    }else if(v1 < v2){
+        curr1++;
+        cout<<endl;
+    }else{
+        curr1++;
+        curr2++;
+        cout<<v1<<" , ";
+    }
+}
 
+}
+void testExcption(){
+    LinkList<int> l;
+   // THROW_EXCEPTION("",InvalidParameterException);
+
+}
 
 int main(){
     //cout<<"start main";
-    testListReVerse();
+    //testListReVerse();
+  //  printShareValue();
+  //  testExcption();
+    testBtree();
 }
 
