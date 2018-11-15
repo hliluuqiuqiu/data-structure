@@ -6,11 +6,11 @@
 using namespace std;
 namespace SQHLib {
 void *Object::operator new ( size_t size) throw(){
-  //   cout<<"create object  size :" <<size<<endl;
+    cout<<"create object  size :" <<size<<endl;
     return malloc(size);
 }
 void Object::operator delete (void *p) throw(){
-     //cout<<"delete object"<<endl;
+     cout<<"delete object"<<endl;
     free(p);
 }
 void *Object::operator new []( size_t size) throw(){
