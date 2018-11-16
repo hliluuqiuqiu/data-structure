@@ -48,7 +48,69 @@ bool insert(T& val){
     }
 
     insertFixUp(node);
-       
+    return true;  
+}
+
+bool remove(T& val){
+    RBreeNode<T>* target = find(val);
+    if(target == NULL){
+         THROW_EXCEPTION("RBreeNode<T>",InvalidParameterException);
+    }
+    RBreeNode<T>* replace = target;
+    if(target->m_left && target->m_right){
+        replace = target->m_right;
+        while(replace->m_left != NULL){
+            replace = replace->m_left;
+        }
+       target->m_value = replace->m_value;
+
+    }
+
+    RBreeNode<T>* child = NULL;
+
+    if(replace->m_left){
+        child = replace->m_left;
+    }else{
+        child = replace->m_right;
+    }
+
+    if(child){
+        child->m_parrent = replace->m_parrent;
+    }
+
+    if(replace->m_parrent && isLeftChild(replace,replace->m_parrent)){
+        replace->m_parrent->m_left = child;
+    }else if(replace->m_parrent && (!isLeftChild(replace,replace->m_parrent))){
+        replace->m_parrent->m_right = child;
+    }
+
+    if(replace->m_parrent == NULL){
+        m_root == child;
+    }
+
+    if(replace->m_color = COLOR::BLACK){
+        fixRemoveUp(child,replace->m_parrent);
+    }
+
+    destroyNode(replace);
+    return true;
+}
+
+RBreeNode<T>* find(T& val){
+    RBreeNode<T>* ret = m_root;
+
+    while(ret){
+        if(ret->m_value == val){
+            break;
+        }else if(ret->m_value > val){
+            ret = ret->m_left;
+        }else{
+            ret = ret->m_right;
+        }
+    }
+
+    return ret;
+
 }
 
 protected:
@@ -61,6 +123,10 @@ RBreeNode<T>* createNode(T& val, COLOR color){
     ret->m_color = color;
     ret->m_value = val;
     return ret;   
+}
+
+void destroyNode(RBreeNode<T>*  ret){
+    delete ret;
 }
 
 void insertFixUp(RBreeNode<T>* node){
@@ -122,6 +188,133 @@ void insertFixUp(RBreeNode<T>* node){
 
      m_root->m_color = COLOR::BLACK;  
         
+}
+
+void fixRemoveUp(RBreeNode<T>* node, RBreeNode<T>* parrent){
+
+    while((!node || isBlack(node)) && (node != m_root)){
+       if(isLeftChild(node, parrent)){
+           RBreeNode<T>* brother  =  parrent->m_right;
+           if(isRed(brother)){
+               brother->m_color = COLOR::BLACK;
+               parrent->m_color = COLOR::RED;
+               RBreeNode<T>* temp = parrent->m_parrent;
+               RBreeNode<T>*  tempN = NULL;
+
+               tempN = rotateWithLeft(parrent);
+               tempN->m_parrent = temp;
+               if(temp == NULL){
+                   m_root = temp;
+               } 
+               brother = parrent->m_right;
+               
+           }
+
+           if( ((!brother->m_left) || isBlack(brother->m_left))
+                && ((!brother->m_right) || isBlack(brother->m_right))
+           ){
+
+               brother->m_color = COLOR::RED;
+               node = parrent;
+               parrent = parrent->m_parrent;
+               if(parrent == NULL){   
+                   m_root = node;              
+                   break;
+               }
+           }else{
+               if(!brother->m_right || isBlack(brother->m_right)){
+                   brother->m_left->m_color =  COLOR::BLACK;
+                   brother->m_color = COLOR::RED;
+                   RBreeNode<T>* temp = brother->m_parrent;
+                   brother = rotateWithRight(brother);
+                   brother->m_parrent = temp;
+               }
+
+               brother->m_color = brother->m_parrent->m_color;
+               brother->m_parrent->m_color = COLOR::BLACK;
+               brother->m_right->m_color = COLOR::BLACK;
+               RBreeNode<T>* temp = brother->m_parrent->m_parrent;
+               RBreeNode<T>* tempN = NULL;
+               tempN = rotateWithLeft(brother->m_parrent);
+               tempN->m_parrent = temp;
+               if(temp == NULL){
+                   m_root = tempN;
+               }
+               
+               break;
+           }
+       }else{
+            RBreeNode<T>* brother  =  parrent->m_left;
+            if(isRed(brother)){
+                brother->m_color = COLOR::BLACK;
+                parrent->m_color = COLOR::RED;
+                RBreeNode<T>* temp = parrent->m_parrent;
+                RBreeNode<T>*  tempN = NULL;
+                tempN = rotateWithRight(parrent);
+                tempN->m_parrent = temp;
+                if(temp ==  NULL){
+                    m_root = tempN;
+                }
+
+                brother = parrent->m_left;
+            }
+
+            if( ((!(brother->m_left)) || isBlack(brother->m_left))
+            && ((!(brother->m_right)) || isBlack(brother->m_right))
+            ){
+                brother->m_color = COLOR::RED;
+                node = parrent;
+                parrent = parrent->m_parrent;
+                if(parrent =  NULL ){
+                    m_root = node;
+                    break;
+                }
+
+            }else{
+                if((!(brother->m_left)) || isBlack(brother->m_left)){
+                    brother->m_right->m_color = COLOR::BLACK;
+                    brother->m_color = COLOR::RED;
+                    RBreeNode<T>* temp = brother->m_parrent;
+                    brother = rotateWithLeft(brother);
+                    brother->m_parrent = temp;
+                }
+
+                brother->m_color = brother->m_parrent->m_color;
+                brother->m_left->m_color =  COLOR::BLACK;
+                RBreeNode<T>* temp = brother->m_parrent->m_parrent;
+                RBreeNode<T>* tempN = NULL;
+                tempN = rotateWithRight(brother->m_parrent);
+                tempN->m_parrent = temp;
+                if(temp == NULL){
+                   m_root = tempN;
+                }              
+                break;
+            }
+       }
+    }
+
+    if(node){
+        node->m_color = COLOR::BLACK;
+    }
+
+}
+
+bool isRed(RBreeNode<T>* node){
+    bool ret = false;
+    if(ret){
+        ret = (node->m_color == COLOR::RED);
+    }
+
+    return ret;
+}
+
+bool isBlack(RBreeNode<T>* node){
+    bool ret = false;
+    if(ret){
+        ret = (node->m_color == COLOR::BLACK);
+    }
+
+    return ret;
 }
 
 RBreeNode<T>* rotateWithLeft(RBreeNode<T>* node){
